@@ -31,8 +31,9 @@ func DBinstance() *mongo.Client {
 	return client
 }
 
-func OpenCollection(dbName, collectionName string) *mongo.Collection {
+func OpenCollection(collectionName string) *mongo.Collection {
 	client := DBinstance()
+	dbName := os.Getenv("DB_NAME")
 	collection := client.Database(dbName).Collection(collectionName)
 	return collection
 }
