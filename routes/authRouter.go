@@ -1,5 +1,10 @@
 package routes
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/kuthumipepple/jwt-project/controllers"
+)
 
-func AuthRoutes(*gin.Engine) {}
+func AuthRoutes(router *gin.Engine) {
+	router.POST("/users/signup", controllers.Signup())
+}
