@@ -1,11 +1,16 @@
 package utils
 
 import (
+	"context"
 	"log"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/kuthumipepple/jwt-project/database"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type SignedDetails struct {
@@ -18,6 +23,7 @@ type SignedDetails struct {
 }
 
 var SECRET_KEY string = os.Getenv("JWT_SECRET_KEY")
+var userCollection = database.OpenCollection("users")
 
 func GenerateAllTokens(email, firstName, lastName, userType, uid string) (signedToken, signedRefreshToken string, err error) {
 	claims := &SignedDetails{
@@ -47,4 +53,32 @@ func GenerateAllTokens(email, firstName, lastName, userType, uid string) (signed
 	}
 
 	return token, refreshToken, err
+}
+
+func UpdateAllTokens(signedToken, signedRefreshToken, uid string) {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+
+	var updateObj primitive.D
+	updateObj = append(updateObj, bson.E{Key: "token", Value: signedToken})
+	updateObj = append(updateObj, bson.E{Key: "refresh_token", Value: signedRefreshToken})
+	updateObj = append(updateObj, bson.E{Key: "updated_at", Value: time.Now()})
+
+	upsert := true
+	opt := options.UpdateOptions{
+		Upsert: &upsert,
+	}
+	filter := bson.M{"user_id": uid}
+	_, err := userCollection.UpdateOne(
+		ctx,
+		filter,
+		bson.D{
+			{Key: "$set", Value: updateObj},
+		},
+		&opt,
+	)
+	if err != nil {
+		log.Panic(err)
+	}
+
 }
