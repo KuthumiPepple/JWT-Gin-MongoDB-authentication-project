@@ -122,3 +122,26 @@ func Login() gin.HandlerFunc {
 		c.JSON(http.StatusOK, foundUser)
 	}
 }
+
+func GetUser() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		queriedUserId := c.Param("user_id")
+		if err := utils.MatchUserTypeToUid(c, queriedUserId); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+
+		user := models.User{}
+		err := userCollection.FindOne(ctx, bson.M{"user_id": queriedUserId}).Decode(&user)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, user)
+
+	}
+}

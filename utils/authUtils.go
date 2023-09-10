@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"errors"
 	"log"
 
+	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -23,4 +25,14 @@ func VerifyPassword(userPasswd, existingPasswd string) (bool, string) {
 		check = false
 	}
 	return check, msg
+}
+
+func MatchUserTypeToUid(c *gin.Context, queriedUserId string) error {
+	userType := c.GetString("user_type")
+	userId := c.GetString("user_id")
+	// usertype USER cannot get the data of another user
+	if userType == "USER" && userId != queriedUserId {
+		return errors.New("unauthorized to access this resource")
+	}
+	return nil
 }
