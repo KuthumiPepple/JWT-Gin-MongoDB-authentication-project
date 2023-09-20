@@ -36,3 +36,10 @@ func MatchUserTypeToUid(c *gin.Context, queriedUserId string) error {
 	}
 	return nil
 }
+
+func CheckUserType(c *gin.Context, role string) bool {
+	if userType := c.GetString("user_type"); userType != role {
+		return false
+	}
+	return true
+}
