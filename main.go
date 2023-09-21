@@ -4,12 +4,10 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/kuthumipepple/jwt-project/routes"
 )
 
 func main() {
-	godotenv.Load(".env")
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8000"
