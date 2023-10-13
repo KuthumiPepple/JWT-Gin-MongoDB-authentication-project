@@ -61,14 +61,14 @@ func UpdateAllTokens(signedToken, signedRefreshToken, uid string) {
 
 	var updateObj primitive.D
 	updateObj = append(updateObj, bson.E{Key: "token", Value: signedToken})
-	updateObj = append(updateObj, bson.E{Key: "refresh_token", Value: signedRefreshToken})
-	updateObj = append(updateObj, bson.E{Key: "updated_at", Value: time.Now()})
+	updateObj = append(updateObj, bson.E{Key: "refreshtoken", Value: signedRefreshToken})
+	updateObj = append(updateObj, bson.E{Key: "updatedat", Value: time.Now()})
 
 	upsert := true
 	opt := options.UpdateOptions{
 		Upsert: &upsert,
 	}
-	filter := bson.M{"user_id": uid}
+	filter := bson.M{"userid": uid}
 	_, err := userCollection.UpdateOne(
 		ctx,
 		filter,

@@ -114,7 +114,7 @@ func Login() gin.HandlerFunc {
 		}
 
 		utils.UpdateAllTokens(token, refreshToken, foundUser.UserID)
-		err = userCollection.FindOne(ctx, bson.M{"user_id": foundUser.UserID}).Decode(&foundUser)
+		err = userCollection.FindOne(ctx, bson.M{"userid": foundUser.UserID}).Decode(&foundUser)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -136,7 +136,7 @@ func GetUser() gin.HandlerFunc {
 		defer cancel()
 
 		user := models.User{}
-		err := userCollection.FindOne(ctx, bson.M{"user_id": queriedUserId}).Decode(&user)
+		err := userCollection.FindOne(ctx, bson.M{"userid": queriedUserId}).Decode(&user)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
